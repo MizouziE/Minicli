@@ -6,11 +6,12 @@ class App
 {
 	protected $printer;
 
-	protected $registry = [];
+	protected $commandRegistry = [];
 
 	public function __construct()
 	{
 		$this->printer = new CliPrinter();
+		$this->commandRegistry = new CommandRegistry();
 	}
 
 	public function getPrinter()
@@ -20,22 +21,18 @@ class App
 
 	public function registerCommand($name, $callable)
 	{
-		$this->registry[$name] = $callable;
-	}
-
-	public function getCommand($command)
-	{
-		return $this->registry[$command] ?? null;
+		$this->commandRegistry->registerCommand($name, $callable);
 	}
 
 	public function runCommand(array $argv)
 	{
 		$commandName = "help";
+		
 		if (isset($argv[1])) {
 			$commandName = $argv[1];
 		}
 
-		$command = $this->getCommand($commandName);
+		$command = $this->commandRegistry->getCommand($commandName);
 		if ($command === null) {
 			$this->getPrinter()->display("ERROR: Command \"$commandName\" not found.");
 			exit;
