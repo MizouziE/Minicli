@@ -8,10 +8,12 @@ class App
 
 	protected $commandRegistry = [];
 
+	protected $appSignature;
+
 	public function __construct()
 	{
 		$this->printer = new CliPrinter();
-		$this->commandRegistry = new CommandRegistry();
+		$this->commandRegistry = new CommandRegistry(__DIR__ . '/../app/Command');
 	}
 
 	public function getPrinter()
@@ -19,9 +21,19 @@ class App
 		return $this->printer;
 	}
 
-	public function registerController($name, CommandController $controller)
+	public function getSignature()
 	{
-		$this->commandRegistry->registerController($name, $controller);
+		return $this->appSignature;
+	}
+
+	public function printSignature()
+	{
+		$this->getPRinter()->display(sprintf("usage: %s", $this->getSignature()));
+	}
+
+	public function setSignature($appSignature)
+	{
+		$this->appSignature = $appSignature;
 	}
 
 	public function registerCommand($name, $callable)
@@ -31,16 +43,33 @@ class App
 
 	public function runCommand(array $argv)
 	{
-		$commandName = "help";
-		
-		if (isset($argv[1])) {
-			$commandName = $argv[1];
+		$input = new CommandCall($argv);
+
+		if (count($input->args) < 2) {
+			$this->printSignature();
+			exit;
 		}
 
+		$controller = $this->commandRegistry->getCallableController($input->command, $input->subCommand);
+
+		if ($controller instanceof CommandController) {
+			$controller->boot($this);
+			$controller->run($input);
+			$controller->teardown();
+			exit;
+		}
+
+		$this->runSingle($input);
+	}
+
+	protected function runSingle(CommandCall $input)
+	{
 		try {
-			call_user_func($this->commandRegistry->getCallable($commandName), $argv);
+			$callable = $this->commandRegistry->getCallable($input->command);
+			call_user_func($callable, $input);
 		} catch (\Exception $e) {
 			$this->getPrinter()->display("ERROR: " . $e->getMessage());
+			$this->printSignature();
 			exit;
 		}
 	}

@@ -4,44 +4,71 @@ namespace Minicli;
 
 class CommandRegistry
 {
-	protected $registry = [];
+	protected $commandsPath;
 
-	protected $controllers = [];
+	protected $namespaces = [];
 
-	public function registerController($commandName, CommandController $controller)
+	protected $defaultRegistry = [];
+
+	public function __construct($commandsPath)
 	{
-		$this->controllers = [ $commandName => $controller ];
+		$this->commandsPath = $commandsPath;
+		$this->autoloadNamespaces();
+	}
+
+	public function autoloadNamespaces()
+	{
+		foreach (glob($this->getCommandsPath() . '/*', GLOB_ONLYDIR) as $namespacePath) {
+			$this->registerNamespace(basename($namespacePath));
+		}
+	}
+
+	public function registerNamespace($commandNamespace)
+	{
+		$namespace = new CommandNamespace($commandNamespace);
+		$namespace->loadControllers($this->getCommandsPath());
+		$this->namespaces[strtolower($commandNamespace)] = $namespace;
+	}
+
+	public function getNamespace($command)
+	{
+		return $this->namespaces[$command] ?? null;
+	}
+
+	public function getCommandsPath()
+	{
+		return $this->commandsPath;
 	}
 
 	public function registerCommand($name, $callable)
 	{
-		$this->registry[$name] = $callable;
-	}
-
-	public function getController($command)
-	{
-		return $this->controllers[$command] ?? null;
+		$this->defaultRegistry[$name] = $callable;
 	}
 
 	public function getCommand($command)
 	{
-		return $this->registry[$command] ?? null;
+		return $this->defaultRegistry[$command] ?? null;
 	}
 
-	public function getCallable($commandName)
+	public function getCallableController($command, $subCommand = null)
 	{
-		$controller = $this->getController($commandName);
+		$namespace = $this->getNamespace($command);
 
-		if ($controller instanceof CommandController) {
-			return [ $controller, 'run' ];
+		if ($namespace !== null) {
+			return $namespace->getController($subCommand);
 		}
 
-		$command = $this->getCommand($commandName);
+		return null;
+	}
 
-		if ($command === null) {
-			throw new \Exception("Command \"$commandName\" not found.");
+	public function getCallable($command)
+	{
+		$singleCommand = $this->getCommand($command);
+
+		if ($singleCommand === null) {
+			throw new \Exception(sprintf("Command \"%s\" not found.", $command));
 		}
 
-		return $command;
+		return $singleCommand;
 	}
 }
