@@ -19,6 +19,11 @@ class App
 		return $this->printer;
 	}
 
+	public function registerController($name, CommandController $controller)
+	{
+		$this->commandRegistry->registerController($name, $controller);
+	}
+
 	public function registerCommand($name, $callable)
 	{
 		$this->commandRegistry->registerCommand($name, $callable);
@@ -32,12 +37,11 @@ class App
 			$commandName = $argv[1];
 		}
 
-		$command = $this->commandRegistry->getCommand($commandName);
-		if ($command === null) {
-			$this->getPrinter()->display("ERROR: Command \"$commandName\" not found.");
+		try {
+			call_user_func($this->commandRegistry->getCallable($commandName), $argv);
+		} catch (\Exception $e) {
+			$this->getPrinter()->display("ERROR: " . $e->getMessage());
 			exit;
 		}
-
-		call_user_func($command, $argv);
 	}
 }
