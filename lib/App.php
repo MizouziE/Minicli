@@ -2,6 +2,11 @@
 
 namespace Minicli;
 
+use Minicli\Command\CommandCall;
+use Minicli\Command\CommandRegistry;
+use Minicli\Output\BasicPrinter;
+use Minicli\Output\CliPrinter;
+
 class App
 {
 	protected $printer;
@@ -10,10 +15,11 @@ class App
 
 	protected $appSignature;
 
-	public function __construct()
+	public function __construct($appPath = null, OutputInterface $output = null)
 	{
-		$this->printer = new CliPrinter();
-		$this->commandRegistry = new CommandRegistry(__DIR__ . '/../app/Command');
+		$this->printer = $output ?? new BasicPrinter();
+
+		$this->commandRegistry = new CommandRegistry($appPath ?? __DIR__ . '/../app/Command');
 	}
 
 	public function getPrinter()
@@ -52,7 +58,7 @@ class App
 
 		$controller = $this->commandRegistry->getCallableController($input->command, $input->subCommand);
 
-		if ($controller instanceof CommandController) {
+		if ($controller instanceof ControllerInterface) {
 			$controller->boot($this);
 			$controller->run($input);
 			$controller->teardown();
