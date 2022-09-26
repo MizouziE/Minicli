@@ -4,22 +4,51 @@ namespace Minicli;
 
 use Minicli\Command\CommandCall;
 use Minicli\Command\CommandRegistry;
-use Minicli\Output\BasicPrinter;
 use Minicli\Output\CliPrinter;
 
 class App
 {
-	protected $printer;
-
-	protected $commandRegistry = [];
-
 	protected $appSignature;
 
-	public function __construct($appPath = null, OutputInterface $output = null)
-	{
-		$this->printer = $output ?? new BasicPrinter();
+	protected $services = [];
 
-		$this->commandRegistry = new CommandRegistry($appPath ?? __DIR__ . '/../app/Command');
+	protected $loadedServices = [];
+
+	public function __construct(array $config = null)
+	{
+		$config = array_merge([
+			'appPath' => __DIR__ . '/../app/Command',
+			'theme' => 'regular,
+		], $config);
+
+		$this->setSignature('./minicli help');
+
+		$this->addService('config', new Config($config));
+		$this->addService('commandRegistry', new CommandRegistry($this->config->appPath));
+		$this->addService('printer', new CliPrinter());
+	}
+
+	public function __get($name)
+	{
+		if (!array_key_exists($name, $this->services)) {
+			return null;
+		}
+
+		if (!array_key_exists($name, $this->loadedServices)) {
+			$this->loadService($name);
+		}
+
+		return $this->services[$name];
+	}
+
+	public function addService($name, ServiceInterface $service)
+	{
+		$this->services[$name] = $service;
+	}
+
+	public function loadService($name)
+	{
+		$this->loadedServices[$name] = $this->services[$name]->load($this);
 	}
 
 	public function getPrinter()
