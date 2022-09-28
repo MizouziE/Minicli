@@ -3,7 +3,7 @@
 namespace App\Command\Help;
 
 use Minicli\App;
-use Minicli\Command\CommanController;
+use Minicli\Command\CommandController;
 use Minicli\Command\CommandRegistry;
 
 class DefaultController extends CommandController

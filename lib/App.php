@@ -18,7 +18,7 @@ class App
 	{
 		$config = array_merge([
 			'appPath' => __DIR__ . '/../app/Command',
-			'theme' => 'regular,
+			'theme' => 'regular',
 		], $config);
 
 		$this->setSignature('./minicli help');
