@@ -40,6 +40,11 @@ abstract class CommandController implements ControllerInterface
 		return $this->input->params;
 	}
 
+	protected function hasFlag($flag)
+	{
+		return $this->input->hasFlag($flag);
+	}
+
 	protected function getParam($param)
 	{
 		return $this->input->getParam($param);

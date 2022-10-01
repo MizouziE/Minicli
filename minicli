@@ -9,5 +9,5 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Minicli\App;
 
-$app = new App(['theme' => 'unicorn']);
+$app = new App(['theme' => 'regular']);
 $app->runCommand($argv);

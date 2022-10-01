@@ -35,4 +35,9 @@ class CommandCall
 	{
 		return $this->params[$param] ?? null;
 	}
+
+	public function hasFlag($flag)
+	{
+		return in_array($flag, $this->args);
+	}
 }
