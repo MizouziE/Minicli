@@ -95,7 +95,7 @@ class CliPrinter implements OutputInterface, ServiceInterface
 				$style = "info_alt";
 			}
 
-			$this->prtintRow($table, $index, $style, $minColSize);
+			$this->printRow($table, $index, $style, $minColSize);
 			$first = false;
 		}
 
@@ -107,7 +107,7 @@ class CliPrinter implements OutputInterface, ServiceInterface
 
 	public function printRow(array $table, $row, $style = "default", $minColSize = 5)
 	{
-		foreach ($table[$row] as $cloumn => $tableCell) {
+		foreach ($table[$row] as $column => $tableCell) {
 			$colSize = $this->calculateColumnSize($column, $table, $minColSize);
 
 			$this->printCell($tableCell, $style, $colSize);

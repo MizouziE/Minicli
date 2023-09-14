@@ -55,7 +55,7 @@ abstract class CommandController implements ControllerInterface
 		return $this->app;
 	}
 
-	protected function getPrinter()
+	protected function getPrinter(): CliPrinter
 	{
 		return $this->getApp()->getPrinter();
 	}

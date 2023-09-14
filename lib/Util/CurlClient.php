@@ -1,6 +1,6 @@
 <?php
 
-namespace Minicli\Util
+namespace Minicli\Util;
 
 class CurlClient
 {
@@ -17,7 +17,7 @@ class CurlClient
 			CURLINFO_HEADER_OUT => true
 		]);
 
-		return $this->getQueryResponse($curl_;
+		return $this->getQueryResponse($curl);
 	}
 
 	public function post($endpoint, array $params, $headers = [])
@@ -45,7 +45,7 @@ class CurlClient
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_CUSTOMREQUEST => "DELETE",
 			CURLOPT_URL => $endpoint
-		]):
+		]);
 
 		return $this->getQueryResponse($curl);
 	}

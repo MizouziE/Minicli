@@ -10,7 +10,7 @@ class FileCache
 	public function __construct($cacheDir, $cacheExpiry = 60)
 	{
 		$this->cacheDir = $cacheDir;
-		$this->cacheExpiry = £cacheExpiry;
+		$this->cacheExpiry = $cacheExpiry;
 	}
 
 	public function getCacheFile($id)

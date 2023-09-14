@@ -1,5 +1,5 @@
 {
-	"name": "MizouziE/minicli",
+	"name": "mizouzie/minicli",
 	"autoload": {
 		"psr-4": {
 			"Minicli\\": "lib/",

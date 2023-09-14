@@ -8,7 +8,7 @@ use Minicli\Command\CommandRegistry;
 
 class DefaultController extends CommandController
 {
-	protected $commandMAp = [];
+	protected $commandMap = [];
 
 	public function boot(App $app)
 	{

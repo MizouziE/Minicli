@@ -97,7 +97,7 @@ class CommandRegistry implements ServiceInterface
 			$controllers = $namespace->getControllers();
 			$subs = [];
 			foreach ($controllers as $subCommand => $controller) {
-				$subs[] = $command;
+				$subs[] = $subCommand;
 			}
 
 			$map[$command] = $subs;
